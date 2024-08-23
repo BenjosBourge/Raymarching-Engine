@@ -3,6 +3,7 @@
  */
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 int main()
 {
@@ -13,6 +14,13 @@ int main()
     quad[1].position = sf::Vector2f(0, 600);
     quad[2].position = sf::Vector2f(800, 600);
     quad[3].position = sf::Vector2f(800, 0);
+
+    sf::Shader shader;
+
+    if (!shader.loadFromFile("shader/fragment_shader.frag", sf::Shader::Fragment))
+    {
+        std::cout << "Error loading shader" << std::endl;
+    }
 
     while (window.isOpen()) {
         sf::Event event;
@@ -26,7 +34,7 @@ int main()
         }
 
         window.clear(sf::Color::Black);
-        window.draw(quad);
+        window.draw(quad, &shader);
         window.display();
     }
     return 0;
