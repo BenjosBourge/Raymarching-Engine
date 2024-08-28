@@ -9,7 +9,6 @@ float sdSphere(vec3 p, float r)
     return length(p) - r;
 }
 
-
 float map(vec3 p)
 {
     float d = 10000.0;
@@ -20,9 +19,10 @@ float map(vec3 p)
         float scale = values[i * 8 + 6];
         d = min(d, sdSphere(p - pos, scale));
     }
-    return d;
-}
 
+    float d2 = p.y + 1.;
+    return min(d, d2);
+}
 
 vec3 calcNormal(in vec3 pos)
 {
@@ -32,33 +32,59 @@ vec3 calcNormal(in vec3 pos)
     map(pos+e.yyx)-map(pos-e.yyx)));
 }
 
+float castRay(vec3 ro, vec3 rd)
+{
+    float t = 0.0;
+    for (int i = 0; i < 100; i++)
+    {
+        vec3 pos = ro + rd*t;
+
+        float h = map(pos);
+
+        if (h < 0.001) break;
+
+        t += h;
+        if (t >= 20.) break;
+    }
+    if (t > 20.)
+        t = -1.;
+    return t;
+}
 
 void main()
 {
     // get the uvs
     vec2 uv = gl_FragCoord.xy / vec2(800, 600);
     uv = uv * 2.0 - 1.0;
-    vec3 color = vec3(0.5, 0.5, 0.5);
+
     float aspect = 800.0 / 600.0;
     float fov = 0.2;
 
     vec3 ro = vec3(0, 0, -8);
     vec3 rd = vec3(uv.x * aspect * fov, uv.y * fov, 1.0);
 
+    vec3 skyCol = vec3(.4, .75, 1.) - .7*rd.y;
+    skyCol = mix(skyCol, vec3(.7, .75, .8), exp(-10. * rd.y));
+    vec3 color = skyCol;
+
     // raymarching
-    float t = 0.0;
-    for (int i = 0; i < 100; i++)
-    {
-        vec3 p = ro + rd * t;
+    float t = castRay(ro, rd);
+    if (t > 0.) {
+        vec3 pos = ro + rd*t;
+        vec3 normal = calcNormal(pos);
+        vec3 mate = vec3(0.18);
 
-        float d = map(p);
-        t += d;
+        vec3 sun_dir = normalize(vec3(.8, .3, .2));
+        float sun_dif = clamp(dot(normal, sun_dir), 0., 1.);
+        float sun_sha = step( castRay(pos + normal * 0.001, sun_dir), 0.0);
+        float sky_dif = clamp(0.5 + 0.5 * dot(normal, vec3(0., 1., 0.)), 0., 1.);
+        float bou_dif = clamp(0.5 + 0.5 * dot(normal, vec3(0., -1., 0.)), 0., 1.);
 
-        if (d > 100.0 || t > 100.0) break; // break the loop
-        if (d < 0.001) {
-            color = calcNormal(p);
-            break;
-        }
+        color = mate * vec3(7., 5., 3.) * sun_dif * sun_sha;
+        color += mate * vec3(0.5, .8, 0.9) * sky_dif;
+        color += mate * vec3(0.7, .3, 0.2) * bou_dif;
     }
+
+    color = pow(color, vec3(0.4545));
     gl_FragColor = vec4(color, 1.0);
 }

@@ -33,6 +33,11 @@ int main()
         std::cout << "Error loading shader" << std::endl;
     }
 
+    if (!sf::Shader::isAvailable()) {
+        std::cout << "shader not available" << std::endl;
+        return 84;
+    }
+
     //initializing the shader
     init(shader);
 
