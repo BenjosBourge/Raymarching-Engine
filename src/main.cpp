@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 
 void init(sf::Shader &shader)
 {
@@ -21,6 +22,8 @@ int main()
     sf::VertexArray quad(sf::Quads, 4);
     sf::Clock clock;
     sf::Clock clockDelta;
+    sf::Clock clockFPS;
+    int fps = 0;
 
     quad[0].position = sf::Vector2f(0, 0);
     quad[1].position = sf::Vector2f(0, resolution.y);
@@ -44,6 +47,11 @@ int main()
     init(shader);
 
     while (window.isOpen()) {
+        if (clockFPS.getElapsedTime().asSeconds() >= 1) {
+            std::cout << "FPS: " << fps << std::endl;
+            fps = 0;
+            clockFPS.restart();
+        }
         float time = clock.getElapsedTime().asSeconds();
         shader.setUniform("iTime", time);
         float deltaTime = clockDelta.restart().asSeconds();
@@ -58,9 +66,14 @@ int main()
             break;
         }
 
+        //update
+        shader.setUniform("targetCamera", sf::Vector3f(0, 0.5, 0));
+        shader.setUniform("originCamera", sf::Vector3f(sin(time) * 3, 1, cos(time) * 3));
+
         window.clear(sf::Color::Black);
         window.draw(quad, &shader);
         window.display();
+        fps++;
     }
     return 0;
 }

@@ -1,5 +1,7 @@
 //Graphics Programming
 
+uniform vec3 targetCamera;
+uniform vec3 originCamera;
 uniform vec2 iResolution;
 uniform float iTime;
 
@@ -63,8 +65,8 @@ void main()
 
     float aspect = iResolution.x / iResolution.y;
 
-    vec3 ta = vec3(0, 0.5, 0);
-    vec3 ro = vec3(sin(iTime) * 4., 0.5, cos(iTime) * 4.);
+    vec3 ta = targetCamera;
+    vec3 ro = originCamera;
 
     vec3 ww = normalize(ta - ro);
     vec3 uu = normalize(cross(vec3(0, 1, 0), ww));
