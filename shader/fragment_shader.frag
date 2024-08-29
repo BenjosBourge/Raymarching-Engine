@@ -1,5 +1,6 @@
 //Graphics Programming
 
+uniform vec2 iResolution;
 uniform float iTime;
 
 uniform float values[16];
@@ -11,7 +12,7 @@ float sdSphere(vec3 p, float r)
 
 float map(vec3 p)
 {
-    float d = 10000.0;
+    /*float d = 10000.0;
     for (int i = 0; i < 2; i++) {
         if (values[i * 8 + 7] <= 0.1)
         continue;
@@ -20,6 +21,10 @@ float map(vec3 p)
         d = min(d, sdSphere(p - pos, scale));
     }
 
+    float d2 = p.y + 1.;
+    return min(d, d2);*/
+
+    float d = sdSphere(p - vec3(0., 0., 0.), 1.0);
     float d2 = p.y + 1.;
     return min(d, d2);
 }
@@ -54,14 +59,17 @@ float castRay(vec3 ro, vec3 rd)
 void main()
 {
     // get the uvs
-    vec2 uv = gl_FragCoord.xy / vec2(800, 600);
-    uv = uv * 2.0 - 1.0;
+    vec2 uv = (2.*gl_FragCoord.xy - iResolution) / iResolution.y;
 
-    float aspect = 800.0 / 600.0;
-    float fov = 0.2;
+    float aspect = iResolution.x / iResolution.y;
 
-    vec3 ro = vec3(0, 0, -8);
-    vec3 rd = vec3(uv.x * aspect * fov, uv.y * fov, 1.0);
+    vec3 ta = vec3(0, 0.5, 0);
+    vec3 ro = vec3(sin(iTime) * 4., 0.5, cos(iTime) * 4.);
+
+    vec3 ww = normalize(ta - ro);
+    vec3 uu = normalize(cross(vec3(0, 1, 0), ww));
+    vec3 vv = normalize(cross(ww, uu));
+    vec3 rd = normalize(uu*uv.x + vv*uv.y + ww*1.2);
 
     vec3 skyCol = vec3(.4, .75, 1.) - .7*rd.y;
     skyCol = mix(skyCol, vec3(.7, .75, .8), exp(-10. * rd.y));

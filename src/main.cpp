@@ -16,15 +16,16 @@ void init(sf::Shader &shader)
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Raymarching Engine");
+    sf::Vector2f resolution(1200, 800);
+    sf::RenderWindow window(sf::VideoMode((int)resolution.x, (int)resolution.y), "Raymarching Engine");
     sf::VertexArray quad(sf::Quads, 4);
     sf::Clock clock;
     sf::Clock clockDelta;
 
     quad[0].position = sf::Vector2f(0, 0);
-    quad[1].position = sf::Vector2f(0, 600);
-    quad[2].position = sf::Vector2f(800, 600);
-    quad[3].position = sf::Vector2f(800, 0);
+    quad[1].position = sf::Vector2f(0, resolution.y);
+    quad[2].position = sf::Vector2f(resolution.x, resolution.y);
+    quad[3].position = sf::Vector2f(resolution.x, 0);
 
     sf::Shader shader;
 
@@ -39,6 +40,7 @@ int main()
     }
 
     //initializing the shader
+    shader.setUniform("iResolution", resolution);
     init(shader);
 
     while (window.isOpen()) {
