@@ -2,17 +2,25 @@
  *  Raymarching Engine - Benjamin Bourge
  */
 
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include <cmath>
+/*void createSphere(sf::Shader &shader, int index, sf::Vector3f position, float radius, sf::Color color)
+{
+    float ff[5] = {1.f, 0.f, 0.f, 0.f, 0.f};
+
+    //position
+    ff[0] = position.x;
+    ff[1] = position.y;
+    ff[2] = position.z;
+    //radius
+    ff[3] = radius;
+
+    std::string indexStr = std::to_string(index * 16);
+    shader.setUniformArray("values[" + indexStr + "]", ff, 5);
+}
 
 void init(sf::Shader &shader)
 {
-    float f[16] = {0.f, 0.f, 2.f, 1.f, 0.f, 0.f, 1.f, 1.f, -2.f, 1.f, 3.f, 1.f, 1.f, 1.f, 0.5f, 1.f};
-    shader.setUniformArray("values", f, 16);
-
-    float ff[3] = {2.f, 1.f, 3.f};
-    shader.setUniformArray("values[8]", ff, 3);
+    createSphere(shader, 0, sf::Vector3f(0, 0, 0), 0.5f, sf::Color::Red);
+    createSphere(shader, 1, sf::Vector3f(1, 1, 0), 0.25f, sf::Color::Green);
 }
 
 int main()
@@ -75,5 +83,20 @@ int main()
         window.display();
         fps++;
     }
+    return 0;
+}*/
+
+#include <GL/glut.h>
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glFlush();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutCreateWindow("OpenGL FreeGLUT Window");
+    glutDisplayFunc(display);
+    glutMainLoop();
     return 0;
 }

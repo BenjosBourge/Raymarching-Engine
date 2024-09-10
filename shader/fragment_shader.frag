@@ -5,28 +5,32 @@ uniform vec3 originCamera;
 uniform vec2 iResolution;
 uniform float iTime;
 
-uniform float values[16];
+uniform float values[3200];
 
 float sdSphere(vec3 p, float r)
 {
     return length(p) - r;
 }
 
+float sdBox(vec3 p, vec3 b)
+{
+    vec3 q = abs(p) - b;
+    return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+
 float map(vec3 p)
 {
-    /*float d = 10000.0;
+    float d = 10000.0;
     for (int i = 0; i < 2; i++) {
-        if (values[i * 8 + 7] <= 0.1)
-        continue;
-        vec3 pos = vec3(values[i * 8 + 0], values[i * 8 + 1], values[i * 8 + 2]);
-        float scale = values[i * 8 + 6];
-        d = min(d, sdSphere(p - pos, scale));
+        float sh = values[i * 16];
+        if (sh <= 0.5) continue;
+        else if (sh <= 1.5)
+            d = min(d, sdSphere(p - vec3(values[i * 8 + 0], values[i * 8 + 1], values[i * 8 + 2]), values[i * 8 + 3]));
+        else if (sh <= 2.5)
+            d = min(d, sdBox(p - vec3(values[i * 8 + 0], values[i * 8 + 1], values[i * 8 + 2]), vec3(values[i * 8 + 3], values[i * 8 + 4], values[i * 8 + 5])));
+        else continue;
     }
 
-    float d2 = p.y + 1.;
-    return min(d, d2);*/
-
-    float d = sdSphere(p - vec3(0., 0., 0.), 1.0);
     float d2 = p.y + 1.;
     return min(d, d2);
 }
